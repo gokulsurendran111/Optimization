@@ -6,11 +6,15 @@ terrain_x=np.loadtxt("xData.txt",dtype='float')
 terrain_y=np.loadtxt("yData.txt",dtype='float')
 terrain_z=np.loadtxt("zData.txt",dtype='float')
 UserLoc=np.loadtxt("population.txt",dtype='float')
+# UserLoc=np.array([[495,435,5],[450,480,5],[999,999,999]])
 
 terrain = terrain_z
 DroneLoc=np.array([[100,100,terrain[100,100]+50],[300,300,terrain[300,300]+50],[500,500,terrain[500,500]+50],
                 [300,700,terrain[300,700]+50],[100,900,terrain[100,900]+50],[700,300,terrain[700,300]+50],
                 [700,700,terrain[700,700]+50],[900,100,terrain[900,100]+50],[900,900,terrain[900,900]+50]])
+
+# DroneLoc=np.array([[500,50,55],[999,999,55]])
+
 
 
 fig = plt.figure(1)
