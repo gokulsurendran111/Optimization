@@ -14,7 +14,7 @@ def pathloss(Drone_coord, User_coord):
     hor_dist = np.sqrt( (dx-ux)**2 + (dy-uy)**2 )
     dist = np.sqrt( (dx-ux)**2 + (dy-uy)**2 + (dz-uz)**2 )
     
-    theta = math.atan(Delta_h / hor_dist)
+    theta = math.atan2(Delta_h,hor_dist)
     theta = np.rad2deg(theta)
     
     a = 9.61
@@ -28,7 +28,7 @@ def pathloss(Drone_coord, User_coord):
     fc = 2.0*10**9
     c = 299792458.0
     
-    PL = 20*np.log(4*np.pi*fc*dist/c) + PLOS*eta_LOS + PNLOS*eta_NLOS
+    PL = 20*np.log10(4*np.pi*fc*dist/c) + PLOS*eta_LOS + PNLOS*eta_NLOS
     return PL
 
 def DroneDistance(Drone1_coord, Drone2_coord):
