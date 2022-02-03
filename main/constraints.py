@@ -60,7 +60,7 @@ def DroneUser_Distance(Drone_coord, User_coord):
 def Intersection_quad(D1_coord,R1,D2_coord,R2):
     D= DroneDistance(D1_coord, D2_coord)
     d=R1+R2-D
-    h=np.sqrt(R1**2 - (R1 - R1*d/(R1+R2)**2))
+    h=np.sqrt(R1**2 - (R1 - R1*d/(R1+R2))**2)
     return d*h
     
 
