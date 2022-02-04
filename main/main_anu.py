@@ -8,12 +8,13 @@ import numpy as np
 import math
 
 from constraints import *
+from terrain_popu import *
 
 Nusers = 50
-Ndrones = 6
+Ndrones = 5
 User_Connection_status = np.zeros(Nusers)
 Rmax = 400 # m
-gamma = 110
+gamma = 100
 
 
 DroneLoc=np.zeros((Ndrones,3))
@@ -35,24 +36,30 @@ def cost(DroneLoc,UserLoc):
     for j in range(Ndrones):
         for i in range(Nusers):
             PLij = pathloss(DroneLoc[j], UserLoc[i])
-    
+            # print(PLij)
             if PLij <= gamma and User_Connection_status[i]==0:
                 User_Connection_status[i] = 1
                 cos_val += PLij/W[i]
-            elif PLij>gamma and User_Connection_status[i]==0:
+                # print('connected')
+            elif PLij>gamma:
                 cos_val += PLij/W[i]
-            elif User_Connection_status[i]==1:
-                cos_val += 200
-           
-                
+                # print('not connected')
+            elif PLij <= gamma and User_Connection_status[i]==1:
+                cos_val += 120
+    print(np.sum(User_Connection_status))
                 
     return cos_val
-            # elif PLij >= gamma:
-            #     User_Connection_status[i,j] = 0
+
+costval=[]
+x=range(0,1000,10)
+for i in x:
+    DroneLoc[1,1]=i
+    coss=cost(DroneLoc,UserLoc)
+    costval.append(coss)
     
-#     ret = 0
-#     for i in range(Nusers):
-#         ret = ret + np.max(User_Connection_status[i,:])
-        
-# #    print(ret)
-#     return ret
+   
+plt.plot(x,costval)
+
+
+
+
