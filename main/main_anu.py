@@ -38,11 +38,11 @@ def cost(DroneLoc,UserLoc):
     
             if PLij <= gamma and User_Connection_status[i]==0:
                 User_Connection_status[i] = 1
-                cos_val = cos_val + PLij/W[i]
+                cos_val += PLij/W[i]
             elif PLij>gamma and User_Connection_status[i]==0:
-                cos_val = cos_val + PLij/W[i]
+                cos_val += PLij/W[i]
             elif User_Connection_status[i]==1:
-                cos_val = cos_val + 200
+                cos_val += 200
            
                 
                 
