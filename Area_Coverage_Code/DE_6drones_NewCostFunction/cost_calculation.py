@@ -47,30 +47,43 @@ def costfunc(Dloc_Array, retUCS=0):
         for j in range(Nusers):
             Plij = pathloss_user_drone(Dloc[i], UserLoc[j])
             distij = DroneUser_Distance(Dloc[i], UserLoc[j])
-#            print(" ")
-#            print("User ",j, " Drone ",i)
-#            print("Path Loss ", Plij)
-#            print("Distance ", distij)
-            if (Plij <= gamma and distij <= Rmax and sum(User_Connection_status[:,i]) < 10):
+
+            if (Plij <= gamma and distij <= Rmax):
                 User_Connection_status[j,i] = 1
-#                print("User ",j, " connected to Drone ",i)
                 wtPlij = Plij/User_Weights[j]
                 wtPlij_sum += wtPlij
-            elif (Plij > gamma or distij > Rmax):
-                wtPlij_sum += gamma
+
+    for i in range(Ndrones):
+        if (sum(User_Connection_status[:,i]) > 10):
+            for j in range(Nusers):
+                if (User_Connection_status[j,i] == 1):
+                    if (sum(User_Connection_status[j,:]) > 1):
+                        for k in range(Ndrones):
+                            if (k!=i):
+                                if(User_Connection_status[j,k] == 1):
+                                    User_Connection_status[j,i] = 0
     
-#    print("User Connection Status = \n", User_Connection_status)
+    for i in range(Ndrones):
+        j = 1
+        while (sum(User_Connection_status[:,i]) > 10):
+            User_Connection_status[Ndrones-j,i] = 0
+            j = j + 1
+    
+    for i in range(Nusers):
+        if (sum(User_Connection_status[i,:]) == 0):
+            wtPlij_sum += gamma 
+    
     wtPlij_sum = wtPlij_sum/(gamma*Nusers)
-#    print("Sum PLij/w = ", wtPlij_sum)
 
     ## Drone Distance Penalty Calculation #####################################
     
     DroneDistSum = 0
+    DroneDistMatrix= np.zeros((Ndrones, Ndrones))
     Ncomb = 1
     for i in range(Ndrones):
         for j in range(Ndrones):
             dist_didj = DroneDistance(Dloc[i], Dloc[j])
-            if (dist_didj <= Rmax):
+            if (dist_didj <= 1.5*Rmax):
                 DroneDistSum += 0.0
             else:
                 Ncomb += 1
@@ -86,7 +99,7 @@ def costfunc(Dloc_Array, retUCS=0):
         if (sum(User_Connection_status[i,:]) >= 1):
             NusersConnected += 1
 
-    Jvalue = Area_not_covered + wtPlij_sum + DDS + NusersConnected/50
+    Jvalue = 10*Area_not_covered + wtPlij_sum + DDS #+ NusersConnected/50
     
     if retUCS == 1:
         return Jvalue, User_Connection_status
@@ -94,13 +107,20 @@ def costfunc(Dloc_Array, retUCS=0):
         return Jvalue
 
 """
+Dloc_Array = [261.06577535, 700.34916318, 387.15723874, 762.85603603, 223.94714781,
+ 351.66532799, 579.16096,    718.09231366, 446.79801357, 453.0037173,
+ 202.22179544, 419.29437284, 310.82328068, 292.05485731, 417.12880548,
+ 771.30690774, 680.95183603, 429.57263537]
+
+COST, UCS = costfunc(Dloc_Array, 1)
+
+
 Dloc_Array = [230.92224307, 694.27668201, 463.84361279, 901.98836072,
        636.57325282, 441.88016907, 827.39543398, 950.89409247,
        226.3154561 , 291.47786536, 138.22019431, 449.52405805,
        735.51572784, 777.51932795, 479.4189237 , 986.23842011,
        238.21483864, 477.31988406]
 
-COST, UCS = costfunc(Dloc_Array)
 print("Total Cost Value = ")
 print(COST)
 
@@ -112,6 +132,15 @@ for i in range(50):
     plt.text(UserLoc[i,0], UserLoc[i,1], str(i), color="black", fontsize=8)
     if (sum(UCS[i,:]) > 0):
         plt.scatter(UserLoc[i,0], UserLoc[i,1], marker='o', color='g', s=20)
+
+
+Best Results
+
+1. 10*Area Covered, Distance constraint present, user redistribution not done, 
+Best :  [261.06577535 700.34916318 387.15723874 762.85603603 223.94714781
+ 351.66532799 579.16096    718.09231366 446.79801357 453.0037173
+ 202.22179544 419.29437284 310.82328068 292.05485731 417.12880548
+ 771.30690774 680.95183603 429.57263537]
 
 """
 
