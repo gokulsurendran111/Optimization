@@ -76,3 +76,4 @@ def point_in_coverage(xp,yp,Dloc,R):
         dist = np.sqrt( (xp - Dloc[i,0])**2 + (yp - Dloc[i,1])**2 )
         truth += (dist<R[i])
     return truth>0
+
