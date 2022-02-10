@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import time
+from init_terrain_popu_drones import *
 
 def pathloss_cov_radius(Drone_coord, r):
     dx = Drone_coord[0]
@@ -34,12 +35,13 @@ def pathloss_cov_radius(Drone_coord, r):
     return PL
 
 def calc_radius(D1, gamma, reg_limit):
+    global Rmax
 
     x_lim = min(D1[0], reg_limit[0] - D1[0])
     y_lim = min(D1[1], reg_limit[1] - D1[1])
     r_lim = min(x_lim, y_lim)
     
-    r_arr = np.linspace(0,1000,500)
+    r_arr = np.linspace(0,Rmax,500)
     
     f1 = []
     for r in r_arr:
@@ -57,7 +59,7 @@ def calc_radius(D1, gamma, reg_limit):
     radius = r_arr[k]
     return radius
 
-def point_in_coverage(xp, yp, Dloc, R):
+def point_in_coverage__OLD(xp, yp, Dloc, R):
     ret = 0
     
     for i in range(len(R)):
@@ -68,3 +70,9 @@ def point_in_coverage(xp, yp, Dloc, R):
     
     return ret 
 
+def point_in_coverage(xp,yp,Dloc,R):
+    truth=np.zeros(len(xp))
+    for i in range(6):
+        dist = np.sqrt( (xp - Dloc[i,0])**2 + (yp - Dloc[i,1])**2 )
+        truth += (dist<R[i])
+    return truth>0

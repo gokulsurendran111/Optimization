@@ -1,17 +1,14 @@
 import numpy as np
 from radius_calc_final import *
 from constraints import *
-from terrain_popu import *
+from init_terrain_popu_drones import *
 
 def costfunc(Dloc_Array, retUCS=0):
-    global UserLoc, User_Weights, gamma
+    global UserLoc, User_Weights
+    global gamma, Rmax
+    global Nusers, Ndrones
     
     reg_limit = [1000.0, 1000.0]
-    gamma = 100
-    Rmax = 500
-    
-    Ndrones = 6
-    Nusers = len(UserLoc)
     
     Dloc = np.zeros((Ndrones,3))
     Dloc[0] = Dloc_Array[0:3]
@@ -25,7 +22,8 @@ def costfunc(Dloc_Array, retUCS=0):
     R = np.zeros(Ndrones)
     for k in range(Ndrones):
         R[k] = calc_radius(Dloc[k], gamma, reg_limit)
-    
+
+    """    
     NP_inside = 0
     NPMC = 50000
     xp_mc = []
@@ -39,6 +37,18 @@ def costfunc(Dloc_Array, retUCS=0):
             yp_mc.append(yp)
 
     Area_not_covered = 1-NP_inside/NPMC 
+    """
+
+    NPMC=50000
+
+    xp1 = np.random.uniform(0,reg_limit[0],50000)
+    yp1 = np.random.uniform(0,reg_limit[1],50000)
+    Np_inside1=point_in_coverage(xp1,yp1,Dloc,R)
+    Area_cov=np.sum(Np_inside1)
+    xp_mc1=xp1[Np_inside1]
+    yp_mc1=yp1[Np_inside1]
+    
+    Area_not_covered = 1-Area_cov/NPMC 
     
     ## Pathloss Calculation ###################################################
     User_Connection_status = np.zeros((Nusers,Ndrones))

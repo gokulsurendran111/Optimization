@@ -8,22 +8,19 @@ terrain_y=np.loadtxt("yData.txt",dtype='float')
 terrain_z=np.loadtxt("zData.txt",dtype='float')
 UserLoc=np.loadtxt("population.txt",dtype='float')
 
-terrain = terrain_z
-
-fig = plt.figure(1)
-ax = plt.axes(projection ="3d")
-ax.set_zlim([0,300])
-
-ax.plot_wireframe(terrain_x, terrain_y, terrain_z, color='k', linewidth=0.2)
-
-ax.set_xlabel("Horizontal X axis (m)")
-ax.set_ylabel("Horizontal Y axis (m)")
-ax.set_zlabel("Altitude (m)")
-ax.scatter3D(UserLoc[:,0], UserLoc[:,1], UserLoc[:,2], marker='o', color='r', s=20)
-plt.show()
-
+UsersOnHill = UserLoc[UserLoc[:,2] > 10.0]
 User_Weights = np.ones(len(UserLoc))
+User_Weights[UserLoc[:,2] > 10.0] = np.full(len(UsersOnHill),10.0)
 
+## Drone Characteristics
+Nusers = len(UserLoc) # 50
+Ndrones = 6
+gamma = 100
+Rmax = 500#np.power(10,90.0/20)*299792458.0/(4*np.pi*2.0e9)
+
+## Generation of User Weights. Weightage given to all users on the hill
+
+""" Old Method to give User Weights 
 box_y_min = 0.0
 box_y_max = 200.0
 box_x_min = 800.0
@@ -35,4 +32,4 @@ for i in range(len(UserLoc)):
     if ( xuser < box_x_max ) and ( xuser > box_x_min ):
         if ( yuser < box_y_max ) and ( yuser > box_y_min ):
             User_Weights[i] = 2.0
-            
+"""
